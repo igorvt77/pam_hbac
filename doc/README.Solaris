@@ -28,6 +28,19 @@ on Omnios:
                 system/header \
                 developer/object-file \
                 developer/linker
+on Solaris 10:
+    pkgutil -i pkgconfig gmake libglib2_dev asciidoc autoconf automake gcc4core glib2 libtool
+
+Note: Since Solaris 10 doesn't have a lot of this packages available easily, you can use
+the free packages located here: https://www.opencsw.org/.  The pkgutil application will
+take care of installing all the dependencies for you. If you don't have internet access
+on the system you are building PAM module on then you can optionally create a package
+stream file on an internet facing system and then install the packages manually from that
+single file.
+To build the stream file you can use a command like this:
+pkgutil -s -o pam_hbac_build_tools.pkg -y -d pkgconfig gmake libglib2_dev asciidoc \
+                                             autoconf automake gcc4core glib2 libtool
+Then just follow the instructions that follow from the creation of the file.
 
 On Solaris, the third-party PAM modules are normally located in
 /usr/lib/security. When building from source, you'll want to add:
@@ -62,6 +75,10 @@ Configuration
 You need to configure the module itself, then include the module in the
 PAM stack. Please see the pam_hbac.conf(5) man page for the available
 configuration options.
+
+Note: For Solaris 10, make sure to define the "SSL_PATH" option in the
+pam_hbac.conf file as by default Solaris 10 does not have OpenLDAP installed.
+Example:  SSL_PATH = /var/ldap
 
 When the config file is created, put the following into /etc/pam.d/other
 or just the particular PAM service you would like to control access to:
